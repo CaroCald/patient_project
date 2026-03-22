@@ -76,14 +76,13 @@ Future<void> setupServiceLocator() async {
     () => LoginUseCase(sl<AuthRepository>(), sl<StorageService>()),
   );
   sl.registerLazySingleton<LogoutUseCase>(
-    () => LogoutUseCase(sl<AuthRepository>()),
+    () => LogoutUseCase(sl<AuthRepository>(), sl<StorageService>()),
   );
 
   sl.registerFactory<AuthBloc>(
     () => AuthBloc(
       sl<LoginUseCase>(),
       sl<LogoutUseCase>(),
-      sl<StorageService>(),
     ),
   );
 }

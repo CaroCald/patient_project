@@ -7,7 +7,6 @@ import 'package:patient_project/core/result/data_result.dart';
 import 'package:patient_project/features/auth/data/models/auth/response/auth_response_model.dart';
 import 'package:patient_project/features/auth/domain/use_cases/login_use_case.dart';
 import 'package:patient_project/features/auth/domain/use_cases/logout_use_case.dart';
-import 'package:patient_project/shared/storage/storage_service.dart';
 
 part 'auth_bloc.freezed.dart';
 part 'auth_event.dart';
@@ -16,12 +15,11 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase _loginUseCase;
   final LogoutUseCase _logoutUseCase;
-  final StorageService _storageService;
 
   late TextEditingController identificationController;
   late TextEditingController passwordController;
 
-  AuthBloc(this._loginUseCase, this._logoutUseCase, this._storageService)
+  AuthBloc(this._loginUseCase, this._logoutUseCase)
       : super(const AuthState()) {
   
     on<_LoginRequested>(_onLoginRequested);
@@ -31,6 +29,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void init() {
     identificationController = TextEditingController();
     passwordController = TextEditingController();
+  }
+  void clearControllers() {
+    identificationController.clear();
+    passwordController.clear();
   }
 
   @override
@@ -56,11 +58,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onLogoutRequested(
       _LogoutRequested event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(status: AuthStatus.loading));
     final result = await _logoutUseCase();
     if (result is Success<void>) {
-      await _storageService.delete(StorageKeys.authToken);
-      identificationController.clear();
-      passwordController.clear();
       emit(state.copyWith(status: AuthStatus.unauthenticated, authModel: null));
     } else if (result is Failure<void>) {
       emit(state.copyWith(status: AuthStatus.error, errorMessage: result.exception.message));

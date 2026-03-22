@@ -55,7 +55,10 @@ class _LoginView extends StatelessWidget {
             title: 'Error al iniciar sesión',
             message: state.errorMessage ?? 'Ocurrió un error inesperado.',
             confirmLabel: 'Aceptar',
-            onConfirm: () {},
+            onConfirm: () {
+              bloc.clearControllers();
+              Navigator.pop(context);
+            },
             isDestructive: true,
           );
         }
