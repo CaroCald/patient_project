@@ -57,7 +57,7 @@ class _LoginView extends StatelessWidget {
             confirmLabel: 'Aceptar',
             onConfirm: () {
               bloc.clearControllers();
-              Navigator.pop(context);
+             
             },
             isDestructive: true,
           );
@@ -81,6 +81,9 @@ class _LoginView extends StatelessWidget {
                 gapH40,
                 AppTextField(
                   controller: bloc.identificationController,
+                  focusNode: bloc.identificationFocusNode,
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: () => bloc.passwordFocusNode.requestFocus(),
                   label: 'Identificación',
                   prefixIcon: Icons.person_outline,
                   validator: (value) =>
@@ -89,18 +92,34 @@ class _LoginView extends StatelessWidget {
                 gapH16,
                 AppPasswordField(
                   controller: bloc.passwordController,
+                  focusNode: bloc.passwordFocusNode,
+                  textInputAction: TextInputAction.done,
+                  onEditingComplete: () {
+                    bloc.passwordFocusNode.unfocus();
+                    if (formKey.currentState!.validate()) {
+                      bloc.add(const AuthEvent.loginRequested());
+                    }
+                  },
                   label: 'Contraseña',
                   validator: (value) =>
                       value == null || value.isEmpty ? 'Ingresa tu contraseña' : null,
                 ),
                 gapH32,
-                AppButton(
-                  label: 'Ingresar',
-                  onPressed: () {
-                    if (formKey.currentState!.validate()) {
-                      bloc.add(const AuthEvent.loginRequested());
-                    }
-                  },
+                ListenableBuilder(
+                  listenable: Listenable.merge([
+                    bloc.identificationController,
+                    bloc.passwordController,
+                  ]),
+                  builder: (context, _) => AppButton(
+                    label: 'Ingresar',
+                    enabled: bloc.identificationController.text.isNotEmpty &&
+                        bloc.passwordController.text.isNotEmpty,
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        bloc.add(const AuthEvent.loginRequested());
+                      }
+                    },
+                  ),
                 ),
               ],
             ),

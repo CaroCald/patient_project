@@ -18,6 +18,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   late TextEditingController identificationController;
   late TextEditingController passwordController;
+  late FocusNode identificationFocusNode;
+  late FocusNode passwordFocusNode;
 
   AuthBloc(this._loginUseCase, this._logoutUseCase)
       : super(const AuthState()) {
@@ -29,16 +31,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void init() {
     identificationController = TextEditingController();
     passwordController = TextEditingController();
+    identificationFocusNode = FocusNode();
+    passwordFocusNode = FocusNode();
   }
   void clearControllers() {
     identificationController.clear();
     passwordController.clear();
+    identificationFocusNode.unfocus();
+    passwordFocusNode.unfocus();
   }
 
   @override
   Future<void> close() {
     identificationController.dispose();
     passwordController.dispose();
+    identificationFocusNode.dispose();
+    passwordFocusNode.dispose();
     return super.close();
   }
 

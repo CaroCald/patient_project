@@ -7,6 +7,7 @@ import 'package:patient_project/core/base/navigation/navigation_service.dart';
 import 'package:patient_project/core/base/network/network.dart';
 import 'package:patient_project/shared/storage/secure_storage/secure_storage_service.dart';
 import 'package:patient_project/shared/storage/storage_service.dart';
+import 'package:patient_project/shared/services/connectivity_service.dart';
 import 'package:patient_project/shared/services/download_service.dart';
 import 'package:patient_project/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:patient_project/features/home/domain/use_cases/download_pdf_use_case.dart';
@@ -32,6 +33,9 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton<StorageService>(
     () => SecureStorageService(sl<FlutterSecureStorage>()),
   );
+
+  // Connectivity
+  sl.registerLazySingleton<ConnectivityService>(() => ConnectivityService());
 
   // Download service
   sl.registerLazySingleton<DownloadService>(() => DownloadService(Dio()));
@@ -73,7 +77,7 @@ Future<void> setupServiceLocator() async {
         : AuthRepositoryImpl(sl<HttpClientService>()),
   );
   sl.registerLazySingleton<LoginUseCase>(
-    () => LoginUseCase(sl<AuthRepository>(), sl<StorageService>()),
+    () => LoginUseCase(sl<AuthRepository>(), sl<StorageService>(), sl<ConnectivityService>()),
   );
   sl.registerLazySingleton<LogoutUseCase>(
     () => LogoutUseCase(sl<AuthRepository>(), sl<StorageService>()),
