@@ -1,0 +1,29 @@
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock",
+  "paciente": "Juan Pérez",
+  "atenciones": [
+    {
+      "id": "101",
+      "fecha": "2026-03-01",
+      "servicio": "Laboratorio Clínico",
+      "orden": "ORD-5542",
+      "estado": "Listo",
+       "pdfUrl": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+    },
+    {
+      "id": "102",
+      "fecha": "2026-03-05",
+      "servicio": "Imagenología",
+      "orden": "ORD-6671",
+      "estado": "En Proceso"
+    },
+    {
+      "id": "103",
+      "fecha": "2026-03-10",
+      "servicio": "Cardiología",
+      "orden": "ORD-7890",
+      "estado": "Listo",
+      "pdfUrl": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+    }
+  ]
+}
