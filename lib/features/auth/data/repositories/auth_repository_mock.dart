@@ -13,6 +13,7 @@ class AuthRepositoryMock implements AuthRepository {
     required String password,
   }) async {
     try {
+      await Future.delayed(const Duration(seconds: 2));
       final jsonString = await rootBundle.loadString('assets/mock/auth_response.json');
       return Success(AuthResponseModel.fromJson(jsonDecode(jsonString)));
     } catch (e) {
@@ -21,5 +22,8 @@ class AuthRepositoryMock implements AuthRepository {
   }
 
   @override
-  Future<DataResult<void>> logout() async => Success(null);
+  Future<DataResult<void>> logout() async {
+    await Future.delayed(const Duration(seconds: 2));
+    return Success(null);
+  }
 }

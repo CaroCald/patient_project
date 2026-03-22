@@ -41,69 +41,66 @@ class _LoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
 
-    return AppScaffold(
-      body: SafeArea(
-        child: Padding(
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state.status == AuthStatus.authenticated && state.authModel != null) {
+          sl<NavigationService>().go(
+            '/home',
+            extra: HomeViewModel.fromResponse(state.authModel!),
+          );
+        }
+        if (state.status == AuthStatus.error) {
+          AppDialog.show(
+            context,
+            title: 'Error al iniciar sesión',
+            message: state.errorMessage ?? 'Ocurrió un error inesperado.',
+            confirmLabel: 'Aceptar',
+            onConfirm: () {},
+            isDestructive: true,
+          );
+        }
+      },
+      builder: (context, state) => AppScaffold(
+        showAppBar: false,
+        isLoading: state.status == AuthStatus.loading,
+        body: Padding(
           padding: EdgeInsets.all(24.w),
-          child: BlocConsumer<AuthBloc, AuthState>(
-            listener: (context, state) {
-              if (state.status == AuthStatus.authenticated && state.authModel != null) {
-                sl<NavigationService>().go(
-                  '/home',
-                  extra: HomeViewModel.fromResponse(state.authModel!),
-                );
-              }
-              if (state.status == AuthStatus.error) {
-                AppDialog.show(
-                  context,
-                  title: 'Error al iniciar sesión',
-                  message: state.errorMessage ?? 'Ocurrió un error inesperado.',
-                  confirmLabel: 'Aceptar',
-                  onConfirm: () {},
-                  isDestructive: true,
-                );
-              }
-            },
-            builder: (context, state) {
-              return Form(
-                key: formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const AppText.headlineLarge(
-                      'Iniciar sesión',
-                      textAlign: TextAlign.center,
-                    ),
-                    gapH40,
-                    AppTextField(
-                      controller: bloc.identificationController,
-                      label: 'Identificación',
-                      prefixIcon: Icons.person_outline,
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Ingresa tu identificación' : null,
-                    ),
-                    gapH16,
-                    AppPasswordField(
-                      controller:bloc.passwordController,
-                      label: 'Contraseña',
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Ingresa tu contraseña' : null,
-                    ),
-                    gapH32,
-                    AppButton(
-                      label: 'Ingresar',
-                      isLoading: state.status == AuthStatus.loading,
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          bloc.add(const AuthEvent.loginRequested());
-                        }
-                      },
-                    ),
-                  ],
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const AppText.headlineLarge(
+                  'Iniciar sesión',
+                  textAlign: TextAlign.center,
                 ),
-              );
-            },
+                gapH40,
+                AppTextField(
+                  controller: bloc.identificationController,
+                  label: 'Identificación',
+                  prefixIcon: Icons.person_outline,
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Ingresa tu identificación' : null,
+                ),
+                gapH16,
+                AppPasswordField(
+                  controller: bloc.passwordController,
+                  label: 'Contraseña',
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Ingresa tu contraseña' : null,
+                ),
+                gapH32,
+                AppButton(
+                  label: 'Ingresar',
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      bloc.add(const AuthEvent.loginRequested());
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

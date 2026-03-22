@@ -24,44 +24,47 @@ class HomeScreen extends StatelessWidget {
           sl<NavigationService>().go('/login');
         }
       },
-      child: AppScaffold(
-        title: 'Hola, ${viewModel.paciente}',
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: AppColors.surface),
-            onPressed: () => AppDialog.show(
-              context,
-              title: 'Cerrar sesión',
-              message: '¿Estás seguro que deseas cerrar sesión?',
-              confirmLabel: 'Salir',
-              cancelLabel: 'Cancelar',
-              isDestructive: true,
-              onConfirm: () =>
-                  context.read<AuthBloc>().add(const AuthEvent.logoutRequested()),
-            ),
-          ),
-        ],
-        body: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const AppText.headlineMedium('Atenciones Médicas'),
-              gapH16,
-              Expanded(
-                child: ListView.separated(
-                  itemCount: viewModel.atenciones.length,
-                  separatorBuilder: (_, _) => gapH12,
-                  itemBuilder: (context, index) {
-                    final atencion = viewModel.atenciones[index];
-                    return _AtencionCard(
-                      atencion: atencion,
-                      onTap: () => sl<NavigationService>().push('/home/atencion', extra: atencion),
-                    );
-                  },
-                ),
+      child: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) => AppScaffold(
+          isLoading: state.status == AuthStatus.loading,
+          title: 'Hola, ${viewModel.paciente}',
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout, color: AppColors.surface),
+              onPressed: () => AppDialog.show(
+                context,
+                title: 'Cerrar sesión',
+                message: '¿Estás seguro que deseas cerrar sesión?',
+                confirmLabel: 'Salir',
+                cancelLabel: 'Cancelar',
+                isDestructive: true,
+                onConfirm: () =>
+                    context.read<AuthBloc>().add(const AuthEvent.logoutRequested()),
               ),
-            ],
+            ),
+          ],
+          body: Padding(
+            padding: EdgeInsets.all(16.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppText.headlineMedium('Atenciones Médicas'),
+                gapH16,
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: viewModel.atenciones.length,
+                    separatorBuilder: (_, _) => gapH12,
+                    itemBuilder: (context, index) {
+                      final atencion = viewModel.atenciones[index];
+                      return _AtencionCard(
+                        atencion: atencion,
+                        onTap: () => sl<NavigationService>().push('/home/atencion', extra: atencion),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

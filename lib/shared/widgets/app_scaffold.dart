@@ -12,6 +12,7 @@ class AppScaffold extends StatelessWidget {
   final bool showAppBar;
   final bool resizeToAvoidBottomInset;
   final VoidCallback? onBack;
+  final bool isLoading;
 
   const AppScaffold({
     super.key,
@@ -23,6 +24,7 @@ class AppScaffold extends StatelessWidget {
     this.showAppBar = true,
     this.resizeToAvoidBottomInset = true,
     this.onBack,
+    this.isLoading = false,
   });
 
   @override
@@ -34,7 +36,20 @@ class AppScaffold extends StatelessWidget {
       appBar: showAppBar && title != null
           ? AppAppBar(title: title!, actions: actions, onBack: onBack)
           : null,
-      body: SafeArea(child: body),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            body,
+            if (isLoading)
+              const Positioned.fill(
+                child: ColoredBox(
+                  color: Colors.black26,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
